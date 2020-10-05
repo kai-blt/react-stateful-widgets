@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 //Create To Do Array
 const toDoItems = [];
-
+let idCount = 0;
 
 export default function ToDo(props) {
     //Set up state hooks
@@ -12,14 +12,17 @@ export default function ToDo(props) {
 
     //Add to list helper function
     const addToList = (input) => {
-       addListItem([...listItem, input]);     
+        //Make an item object with an id and some text. idCount is a unique number for the item.
+        let item = {id: input + idCount, text: input};
+        idCount++; //Increment when adding items for more unique ids
+        addListItem([...listItem, item]); //Spread the previous array contents and add the newly created object
     }
 
-    const removeFromList = (event) => {
-        //Get the closest li from the event target
-        let liToRemove = event.target.closest('li');
-        console.log(listItem.indexOf(liToRemove.textContent));
-        addListItem([...listItem]);
+    const removeFromList = (id) => {
+        //Create a new list out of all of the items EXCEPT the one that has an id of the LI where the button was clicked
+        const newList = listItem.filter(item => item.id !== id);
+        //Refresh list for re render
+        addListItem(newList);
     }
   
     return (
@@ -32,8 +35,8 @@ export default function ToDo(props) {
                 <ul>
                     {
                         listItem.map((item, index) => {        
-                           return <li key={index}>{item} 
-                           <button onClick={() => removeFromList(index)}>x</button></li>
+                           return <li key={item.id + index}>{item.text} 
+                           <button onClick={() => removeFromList(item.id)}>x</button></li>
                        })
                     }
                 </ul>
